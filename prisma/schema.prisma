@@ -3,19 +3,30 @@
 
 generator client {
     provider = "prisma-client-js"
-    output   = "../generated/prisma"
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = env("DATABASE_URL")
+  provider = "mongodb"
+  url      = env("DATABASE_URL") // put your MongoDB URI in .env
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Listing {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  name        String
+  description String
+  price       Float
+  imageUrl    String?
+  message     Message[]
+}
 
-    @@index([name])
+model Message {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  fromUser     String
+  fromUserName String
+  listingId    String   @db.ObjectId
+  message      String
+  listing      Listing  @relation(fields: [listingId], references: [id])
 }
